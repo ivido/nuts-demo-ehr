@@ -1,17 +1,24 @@
+import call from '../../component-loader';
+
 let patientId;
+let interval;
 
 export default {
-  render: (patient) => {
+  render: async (patient) => {
     patientId = patient.id;
-    renderLogs(patientId);
+
+    if ( interval ) window.clearInterval(interval);
+    interval = window.setInterval(() => renderLogs(patientId), 3000);
+
+    await renderLogs(patientId);
   }
 }
 
 function renderLogs(patientId) {
-  return fetch(`/api/accessLog/byPatientId/${patientId}`)
-  .then(response => response.json())
+  const element = document.getElementById('patient-logs');
+  return call(`/api/accessLog/byPatientId/${patientId}`, element)
   .then(logs => {
-    document.getElementById('patient-logs').innerHTML = template(logs);
+    element.innerHTML = template(logs);
   });
 }
 
