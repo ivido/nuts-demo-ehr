@@ -3,6 +3,9 @@ let interval = false;
 
 export default {
   render: () => {
+    // Disable inbox for demo
+    return Promise.resolve();
+
     const element = document.getElementById('inbox');
     if ( !interval )
       interval = window.setInterval(() => update(element), 3000);
