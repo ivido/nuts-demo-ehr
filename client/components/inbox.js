@@ -8,17 +8,7 @@ socket.on('inbox', m => {
 
 export default {
   render: () => {
-<<<<<<< HEAD
-    socket.emit('get', 'inbox');
-=======
-    // Disable inbox for demo
-    return Promise.resolve();
-
-    const element = document.getElementById('inbox');
-    if ( !interval )
-      interval = window.setInterval(() => update(element), 3000);
-    update(element);
->>>>>>> demo-2020-02-20
+    // socket.emit('get', 'inbox');
     return Promise.resolve();
   }
 }

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import io from '../../socketio';
 const socket = io.accessLogs();
 
@@ -13,32 +12,6 @@ export default {
   }
 }
 
-=======
-import call from '../../component-loader';
-
-let patientId;
-let interval;
-
-export default {
-  render: async (patient) => {
-    patientId = patient.id;
-
-    if ( interval ) window.clearInterval(interval);
-    interval = window.setInterval(() => renderLogs(patientId), 3000);
-
-    await renderLogs(patientId);
-  }
-}
-
-function renderLogs(patientId) {
-  const element = document.getElementById('patient-logs');
-  return call(`/api/accessLog/byPatientId/${patientId}`, element)
-  .then(logs => {
-    element.innerHTML = template(logs);
-  });
-}
-
->>>>>>> demo-2020-02-20
 const template = (logs) => `
   <table class="table table-borderless table-bordered table-hover">
     <thead class="thead-dark">
