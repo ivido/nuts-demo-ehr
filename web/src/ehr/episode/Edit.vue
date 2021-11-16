@@ -62,21 +62,21 @@
           </tr>
           </thead>
           <tbody>
-            <tr v-for="collaboration in collaborations">
-              <td>{{ collaboration.organizationName }}</td>
-            </tr>
+          <tr v-for="collaboration in collaborations">
+            <td>{{ collaboration.organizationName }}</td>
+          </tr>
 
-            <tr>
-              <td>
-                <auto-complete
-                    :items="organizations"
-                    @selected="chooseCollaboration"
-                    @search="searchOrganizations"
-                    v-slot="slotProps">
-                  {{ slotProps.item.name }}
-                </auto-complete>
-              </td>
-            </tr>
+          <tr>
+            <td>
+              <auto-complete
+                  :items="organizations"
+                  @selected="chooseCollaboration"
+                  @search="searchOrganizations"
+                  v-slot="slotProps">
+                {{ slotProps.item.name }}
+              </auto-complete>
+            </td>
+          </tr>
           </tbody>
         </table>
       </div>
@@ -135,9 +135,15 @@ export default {
     },
   },
   mounted() {
-    this.fetchEpisode(this.$route.params.episodeID)
-    this.fetchReports(this.$route.params.id, this.$route.params.episodeID)
-    this.fetchCollaborations(this.$route.params.episodeID)
+    this.$watch(
+        () => this.$route.fullPath,
+        (toPath, fromPath) => {
+          console.log("route changed: ", fromPath, toPath)
+          this.fetchEpisode(this.$route.params.episodeID)
+          this.fetchReports(this.$route.params.id, this.$route.params.episodeID)
+          this.fetchCollaborations(this.$route.params.episodeID)
+        }, {immediate: true}
+    )
   }
 }
 </script>
