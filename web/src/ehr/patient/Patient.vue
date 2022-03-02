@@ -13,6 +13,16 @@
     <div class="mb-4">
       <patient-details :patient="patient" :editable="true"/>
     </div>
+    <form v-if="!!znoSsoInfo" v-bind:action="znoSsoInfo?.url" id="form1" method="post">
+      <input type="hidden" name="jwt" v-bind:value="znoSsoInfo?.jwt"/>
+      <button
+        type="submit"
+        form="form1"
+        class="items-center bg-nuts px-10 py-0 m-5 w-30 h-10 rounded-lg justify-center shadow-md text-white"
+      >
+          Open this dossier in HINQ ZNO
+      </button>
+    </form>
     <router-view></router-view>
   </div>
 </template>
@@ -26,6 +36,7 @@ export default {
     return {
       editVisited: false,
       patient: {},
+      znoSsoInfo: null,
     }
   },
   computed: {
@@ -77,7 +88,16 @@ export default {
     this.fetchPatient()
   },
   watch: {
-    $route: 'updateAfterEdit'
+    $route: 'updateAfterEdit',
+
+    // Fetch the ZNO SSO info when the patient is known
+    patient(newPatient) {
+      this.$api.getZnoSsoInfo({bsn: newPatient.ssn})
+        .then(znoSsoInfo => {
+          this.znoSsoInfo = znoSsoInfo
+        })
+        .catch(error => this.$status.error(error))
+    }
   }
 }
 </script>

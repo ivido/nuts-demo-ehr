@@ -8,7 +8,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/nuts-foundation/nuts-demo-ehr/domain/reports"
 	"io/fs"
 	"log"
 	"net/http"
@@ -17,6 +16,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/nuts-foundation/nuts-demo-ehr/domain/reports"
+	"github.com/nuts-foundation/nuts-demo-ehr/domain/zno"
 
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/episode"
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/notification"
@@ -180,6 +182,7 @@ func registerEHR(server *echo.Echo, config Config, customerRepository customers.
 	transferReceiverRepo := receiver.NewTransferRepository(sqlDB)
 	transferSenderService := sender.NewTransferService(authService, fhirClientFactory, transferSenderRepo, customerRepository, dossierRepository, patientRepository, orgRegistry, vcRegistry)
 	transferReceiverService := receiver.NewTransferService(authService, fhirClientFactory, transferReceiverRepo, customerRepository, orgRegistry, vcRegistry)
+	znoService := zno.NewService(config.ZNO.Sso.Address, config.ZNO.Sso.SsoSecret)
 	tenantInitializer := func(tenant int) error {
 		if !config.FHIR.Server.SupportsMultiTenancy() {
 			return nil
@@ -218,6 +221,7 @@ func registerEHR(server *echo.Echo, config Config, customerRepository customers.
 		EpisodeService:          episode.NewService(fhirClientFactory, authService, orgRegistry, vcRegistry),
 		TenantInitializer:       tenantInitializer,
 		NotificationHandler:     notification.NewHandler(authService, fhirClientFactory, transferReceiverService, orgRegistry, vcRegistry),
+		ZnoService:              znoService,
 	}
 
 	// JWT checking for correct claims

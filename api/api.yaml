@@ -700,6 +700,26 @@ paths:
       responses:
         202:
           description: Task updated successfully.
+  /internal/zno/sso:
+    get:
+      parameters:
+        - name: bsn
+          in: query
+          description: BSN of the patient
+          required: true
+          schema:
+            type: string
+      description: >
+        This endpoint returns information about the ZNO SSO. It returns the URL
+        of the SSO and a JWT that can be used to authenticate
+      operationId: getZnoSsoInfo
+      responses:
+        200:
+          description: The requested SSO information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZnoSsoInfo"
 
 components:
   schemas:
@@ -1155,6 +1175,16 @@ components:
         requiresAttention:
           description: If true, this inbox entry requires attention of an end user (e.g. data has been changed by a remote system).
           type: boolean
+    ZnoSsoInfo:
+      description: Information required to connect to the ZNO SSO
+      required:
+        - url
+        - jwt
+      properties:
+        url:
+          type: string
+        jwt:
+          type: string
 
   securitySchemes:
     bearerAuth:

@@ -37,6 +37,11 @@ var defaultHAPIFHIRServer = FHIRServer{
 	Address: "http://localhost:8080/fhir",
 }
 
+var defaultZnoSso = ZNOSso{
+	Address:   "http://localhost:3000",
+	SsoSecret: "wowsosecret",
+}
+
 func defaultConfig() Config {
 	return Config{
 		HTTPPort:        defaultHTTPPort,
@@ -48,6 +53,9 @@ func defaultConfig() Config {
 				Enable: true,
 				Path:   "/fhir",
 			},
+		},
+		ZNO: ZNO{
+			Sso: defaultZnoSso,
 		},
 		CustomersFile:      defaultCustomerFile,
 		Credentials:        Credentials{Password: "demo"},
@@ -62,6 +70,7 @@ type Config struct {
 	HTTPPort        int         `koanf:"port"`
 	NutsNodeAddress string      `koanf:"nutsnodeaddr"`
 	FHIR            FHIR        `koanf:"fhir"`
+	ZNO             ZNO         `koanf:"zno"`
 	CustomersFile   string      `koanf:"customersfile"`
 	Branding        Branding    `koanf:"branding"`
 	// Database connection string, accepts all options for the sqlite3 driver
@@ -92,6 +101,15 @@ func (server FHIRServer) SupportsMultiTenancy() bool {
 type FHIRProxy struct {
 	Enable bool   `koanf:"enable"`
 	Path   string `koanf:"path"`
+}
+
+type ZNO struct {
+	Sso ZNOSso `koanf:"sso"`
+}
+
+type ZNOSso struct {
+	Address   string `koanf:"address"`
+	SsoSecret string `koanf:"ssosecret"`
 }
 
 type Credentials struct {

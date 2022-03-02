@@ -15,6 +15,7 @@ import (
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/transfer/receiver"
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/transfer/sender"
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/types"
+	"github.com/nuts-foundation/nuts-demo-ehr/domain/zno"
 
 	"github.com/lestrrat-go/jwx/jwt"
 	nutsClient "github.com/nuts-foundation/nuts-demo-ehr/nuts/client"
@@ -51,6 +52,7 @@ type Wrapper struct {
 	EpisodeService          episode.Service
 	NotificationHandler     notification.Handler
 	TenantInitializer       func(tenant int) error
+	ZnoService              zno.Service
 }
 
 func (w Wrapper) CheckSession(ctx echo.Context) error {

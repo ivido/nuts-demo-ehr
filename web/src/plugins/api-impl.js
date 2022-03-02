@@ -187,6 +187,23 @@ function createApi(options) {
           mode,
         });
     },
+    getZnoSsoInfo(parameters) {
+      const params = typeof parameters === 'undefined' ? {} : parameters;
+      let headers = {
+
+      };
+      handleSecurity([{"bearerAuth":[]}]
+          , headers, params, 'getZnoSsoInfo');
+      return fetch(endpoint + basePath + '/internal/zno/sso' + '?' + buildQuery({
+          'bsn': params['bsn'],
+        })
+
+        , {
+          method: 'GET',
+          headers,
+          mode,
+        });
+    },
     checkSession(parameters) {
       const params = typeof parameters === 'undefined' ? {} : parameters;
       let headers = {
