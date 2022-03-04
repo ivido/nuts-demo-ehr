@@ -59,6 +59,13 @@ export default {
           .then(patient => this.patient = patient)
           .catch(error => this.$status.error(error))
     },
+    getZnoSsoInfo() {
+      this.$api.getZnoSsoInfo({patientID: this.$route.params.id})
+        .then(znoSsoInfo => {
+          this.znoSsoInfo = znoSsoInfo
+        })
+        .catch(error => this.$status.error(error))
+    },
     back() {
       switch (this.$route.name) {
         case 'ehr.patient.transfer.edit':
@@ -86,18 +93,10 @@ export default {
   },
   created() {
     this.fetchPatient()
+    this.getZnoSsoInfo()
   },
   watch: {
     $route: 'updateAfterEdit',
-
-    // Fetch the ZNO SSO info when the patient is known
-    patient(newPatient) {
-      this.$api.getZnoSsoInfo({bsn: newPatient.ssn})
-        .then(znoSsoInfo => {
-          this.znoSsoInfo = znoSsoInfo
-        })
-        .catch(error => this.$status.error(error))
-    }
   }
 }
 </script>

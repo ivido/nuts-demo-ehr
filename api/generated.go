@@ -41,9 +41,6 @@ type ServerInterface interface {
 	// (PUT /internal/customer/{customerID}/task/{taskID})
 	TaskUpdate(ctx echo.Context, customerID int, taskID string) error
 
-	// (GET /internal/zno/sso)
-	GetZnoSsoInfo(ctx echo.Context, params GetZnoSsoInfoParams) error
-
 	// (GET /private)
 	CheckSession(ctx echo.Context) error
 
@@ -127,6 +124,9 @@ type ServerInterface interface {
 
 	// (PUT /private/transfer/{transferID}/negotiation/{negotiationID})
 	UpdateTransferNegotiationStatus(ctx echo.Context, transferID string, negotiationID string) error
+
+	// (GET /private/zno/sso)
+	GetZnoSsoInfo(ctx echo.Context, params GetZnoSsoInfoParams) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -266,26 +266,6 @@ func (w *ServerInterfaceWrapper) TaskUpdate(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.TaskUpdate(ctx, customerID, taskID)
-	return err
-}
-
-// GetZnoSsoInfo converts echo context to params.
-func (w *ServerInterfaceWrapper) GetZnoSsoInfo(ctx echo.Context) error {
-	var err error
-
-	ctx.Set(BearerAuthScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GetZnoSsoInfoParams
-	// ------------- Required query parameter "bsn" -------------
-
-	err = runtime.BindQueryParameter("form", true, true, "bsn", ctx.QueryParams(), &params.Bsn)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter bsn: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetZnoSsoInfo(ctx, params)
 	return err
 }
 
@@ -783,6 +763,26 @@ func (w *ServerInterfaceWrapper) UpdateTransferNegotiationStatus(ctx echo.Contex
 	return err
 }
 
+// GetZnoSsoInfo converts echo context to params.
+func (w *ServerInterfaceWrapper) GetZnoSsoInfo(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(BearerAuthScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetZnoSsoInfoParams
+	// ------------- Required query parameter "patientID" -------------
+
+	err = runtime.BindQueryParameter("form", true, true, "patientID", ctx.QueryParams(), &params.PatientID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter patientID: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetZnoSsoInfo(ctx, params)
+	return err
+}
+
 // This is a simple interface which specifies echo.Route addition functions which
 // are present on both echo.Echo and echo.Group, since we want to allow using
 // either of them for path registration
@@ -820,7 +820,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/customers", wrapper.ListCustomers)
 	router.POST(baseURL+"/external/transfer/notify/:taskID", wrapper.NotifyTransferUpdate)
 	router.PUT(baseURL+"/internal/customer/:customerID/task/:taskID", wrapper.TaskUpdate)
-	router.GET(baseURL+"/internal/zno/sso", wrapper.GetZnoSsoInfo)
 	router.GET(baseURL+"/private", wrapper.CheckSession)
 	router.GET(baseURL+"/private/customer", wrapper.GetCustomer)
 	router.POST(baseURL+"/private/dossier", wrapper.CreateDossier)
@@ -849,6 +848,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/private/transfer/:transferID/negotiation", wrapper.ListTransferNegotiations)
 	router.POST(baseURL+"/private/transfer/:transferID/negotiation", wrapper.StartTransferNegotiation)
 	router.PUT(baseURL+"/private/transfer/:transferID/negotiation/:negotiationID", wrapper.UpdateTransferNegotiationStatus)
+	router.GET(baseURL+"/private/zno/sso", wrapper.GetZnoSsoInfo)
 
 }
 

@@ -700,12 +700,12 @@ paths:
       responses:
         202:
           description: Task updated successfully.
-  /internal/zno/sso:
+  /private/zno/sso:
     get:
       parameters:
-        - name: bsn
+        - name: patientID
           in: query
-          description: BSN of the patient
+          description: ID of the FHIR Patient resource
           required: true
           schema:
             type: string

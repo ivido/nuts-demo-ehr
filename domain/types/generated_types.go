@@ -421,12 +421,6 @@ type SetCustomerJSONBody Customer
 // AuthenticateWithPasswordJSONBody defines parameters for AuthenticateWithPassword.
 type AuthenticateWithPasswordJSONBody PasswordAuthenticateRequest
 
-// GetZnoSsoInfoParams defines parameters for GetZnoSsoInfo.
-type GetZnoSsoInfoParams struct {
-	// BSN of the patient
-	Bsn string `json:"bsn"`
-}
-
 // CreateDossierJSONBody defines parameters for CreateDossier.
 type CreateDossierJSONBody CreateDossierRequest
 
@@ -489,6 +483,12 @@ type StartTransferNegotiationJSONBody CreateTransferNegotiationRequest
 
 // UpdateTransferNegotiationStatusJSONBody defines parameters for UpdateTransferNegotiationStatus.
 type UpdateTransferNegotiationStatusJSONBody TransferNegotiationStatus
+
+// GetZnoSsoInfoParams defines parameters for GetZnoSsoInfo.
+type GetZnoSsoInfoParams struct {
+	// ID of the FHIR Patient resource
+	PatientID string `json:"patientID"`
+}
 
 // SetCustomerJSONRequestBody defines body for SetCustomer for application/json ContentType.
 type SetCustomerJSONRequestBody SetCustomerJSONBody

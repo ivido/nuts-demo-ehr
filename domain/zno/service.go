@@ -6,13 +6,16 @@ import (
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwt"
 	"github.com/lestrrat-go/jwx/jwt/openid"
+	"github.com/nuts-foundation/nuts-demo-ehr/domain/types"
 )
 
-const user = "user"
-const patient = "patient"
+const userClaim = "user"
+const patientClaim = "patient"
 
 type jwtPatient struct {
-	Bsn string `json:"bsn"`
+	Bsn       string `json:"bsn"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 }
 
 type jwtUser struct {
@@ -22,7 +25,7 @@ type jwtUser struct {
 
 type Service interface {
 	GetSsoUrl() string
-	CreateSsoJwt(patientBSN string) (string, error)
+	CreateSsoJwt(types.Patient) (string, error)
 }
 
 type service struct {
@@ -38,15 +41,19 @@ func (service *service) GetSsoUrl() string {
 	return service.ssoAddress
 }
 
-func (service *service) CreateSsoJwt(patientBSN string) (string, error) {
+func (service *service) CreateSsoJwt(patient types.Patient) (string, error) {
 	t := openid.New()
 
 	t.Set(jwt.ExpirationKey, time.Now().Add(time.Hour*24*365).Unix())
 	t.Set(jwt.IssuedAtKey, time.Now().Unix())
-	t.Set(patient, &jwtPatient{
-		Bsn: patientBSN,
+
+	t.Set(patientClaim, &jwtPatient{
+		Bsn:       *patient.Ssn,
+		FirstName: patient.FirstName,
+		LastName:  patient.Surname,
 	})
-	t.Set(user, &jwtUser{
+
+	t.Set(userClaim, &jwtUser{
 		FirstName: "Jane",
 		LastName:  "the Doctor",
 	})
