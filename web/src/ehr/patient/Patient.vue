@@ -20,7 +20,7 @@
         form="form1"
         class="items-center bg-nuts px-10 py-0 m-5 w-30 h-10 rounded-lg justify-center shadow-md text-white"
       >
-          Open this dossier in HINQ ZNO
+          Open AMO in HINQ
       </button>
     </form>
     <router-view></router-view>
