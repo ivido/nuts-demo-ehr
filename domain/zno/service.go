@@ -8,7 +8,17 @@ import (
 	"github.com/lestrrat-go/jwx/jwt/openid"
 )
 
-const Bsn = "bsn"
+const user = "user"
+const patient = "patient"
+
+type jwtPatient struct {
+	Bsn string `json:"bsn"`
+}
+
+type jwtUser struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+}
 
 type Service interface {
 	GetSsoUrl() string
@@ -33,7 +43,13 @@ func (service *service) CreateSsoJwt(patientBSN string) (string, error) {
 
 	t.Set(jwt.ExpirationKey, time.Now().Add(time.Hour*24*365).Unix())
 	t.Set(jwt.IssuedAtKey, time.Now().Unix())
-	t.Set(Bsn, patientBSN)
+	t.Set(patient, &jwtPatient{
+		Bsn: patientBSN,
+	})
+	t.Set(user, &jwtUser{
+		FirstName: "Jane",
+		LastName:  "the Doctor",
+	})
 
 	ts, err := jwt.Sign(t, jwa.HS256, []byte(service.ssoSecret))
 	if err != nil {
