@@ -1,9 +1,9 @@
 <template>
   <modal-window
-    title="Create new report"
+    title="Create new prescription"
     type="add"
     :confirm-fn="submit"
-    confirm-text="Create Report"
+    confirm-text="Create Prescription"
     :cancel-route="{
       name: 'ehr.patient.episode.edit',
       params: { id: $route.params.id, episodeID: $route.params.episodeID },
@@ -13,8 +13,13 @@
       <form>
         <form-errors-banner :errors="formErrors" />
 
-        <label>Heart rate</label>
-        <input type="text" v-model="report.heartRate" />
+        <label>Prescription:</label>
+        <input
+          type="text"
+          disabled
+          value="INSULINE INSULATARD INJ 100IE/ML FLACON 10ML"
+        />
+        <input type="text" v-model="prescription.name" />
       </form>
     </div>
   </modal-window>
@@ -25,13 +30,13 @@ import ModalWindow from "../../../components/ModalWindow.vue";
 import FormErrorsBanner from "../../../components/FormErrorsBanner.vue";
 
 export default {
-  name: "NewReport",
+  name: "NewPrescription",
   components: { ModalWindow, FormErrorsBanner },
   data() {
     return {
       formErrors: [],
-      report: {
-        heartRate: null,
+      prescription: {
+        name: null,
       },
     };
   },
@@ -40,8 +45,8 @@ export default {
       // reset the errors
       this.formErrors.length = 0;
 
-      if (!this.report.heartRate || this.report.heartRate < 1) {
-        this.formErrors.push("The heart rate should be a positive number");
+      if (!this.prescription.name) {
+        this.formErrors.push("Please enter name for prescription");
       }
 
       return this.formErrors.length === 0;
@@ -56,13 +61,13 @@ export default {
       const patientID = this.$route.params.id;
 
       const payload = {
-        type: "heartRate",
+        type: "prescription",
         patientID,
-        value: this.report.heartRate.toString(),
+        value: this.prescription.name.toString(),
         episodeID: this.$route.params.episodeID,
       };
 
-      this.$api.createReport({
+      this.$api.createPrescription({
         body: payload,
         patientID,
       });

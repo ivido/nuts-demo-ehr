@@ -222,6 +222,14 @@ type Intervention struct {
 	Comment string `json:"comment"`
 }
 
+// Medication defines model for Medication.
+type Medication struct {
+	// An internal object UUID which can be used as unique identifier for entities.
+	Id     ObjectID `json:"id"`
+	Name   string   `json:"name"`
+	Source *string  `json:"source,omitempty"`
+}
+
 // An internal object UUID which can be used as unique identifier for entities.
 type ObjectID string
 
@@ -291,6 +299,24 @@ type PatientPropertiesGender string
 type Period struct {
 	End   *openapi_types.Date `json:"end,omitempty"`
 	Start *openapi_types.Date `json:"start,omitempty"`
+}
+
+// Prescription defines model for Prescription.
+type Prescription struct {
+	// An internal object UUID which can be used as unique identifier for entities.
+	EpisodeID   *ObjectID `json:"episodeID,omitempty"`
+	EpisodeName *string   `json:"episodeName,omitempty"`
+
+	// An internal object UUID which can be used as unique identifier for entities.
+	Id ObjectID `json:"id"`
+
+	// An internal object UUID which can be used as unique identifier for entities.
+	MedicationID   *ObjectID `json:"medicationID,omitempty"`
+	MedicationName *string   `json:"medicationName,omitempty"`
+
+	// An internal object UUID which can be used as unique identifier for entities.
+	PatientID ObjectID `json:"patientID"`
+	Source    *string  `json:"source,omitempty"`
 }
 
 // Problem defines model for Problem.
@@ -430,6 +456,9 @@ type CreateEpisodeJSONBody CreateEpisodeRequest
 // CreateCollaborationJSONBody defines parameters for CreateCollaboration.
 type CreateCollaborationJSONBody CreateCollaborationRequest
 
+// CreateMedicationJSONBody defines parameters for CreateMedication.
+type CreateMedicationJSONBody Medication
+
 // SearchOrganizationsParams defines parameters for SearchOrganizations.
 type SearchOrganizationsParams struct {
 	// Keyword for finding care organizations.
@@ -450,6 +479,15 @@ type GetPatientsParams struct {
 
 // NewPatientJSONBody defines parameters for NewPatient.
 type NewPatientJSONBody PatientProperties
+
+// GetPrescriptionsParams defines parameters for GetPrescriptions.
+type GetPrescriptionsParams struct {
+	// The identifier of episode the prescription must be part of.
+	EpisodeID *string `json:"episodeID,omitempty"`
+}
+
+// CreatePrescriptionJSONBody defines parameters for CreatePrescription.
+type CreatePrescriptionJSONBody Prescription
 
 // GetReportsParams defines parameters for GetReports.
 type GetReportsParams struct {
@@ -505,11 +543,17 @@ type CreateEpisodeJSONRequestBody CreateEpisodeJSONBody
 // CreateCollaborationJSONRequestBody defines body for CreateCollaboration for application/json ContentType.
 type CreateCollaborationJSONRequestBody CreateCollaborationJSONBody
 
+// CreateMedicationJSONRequestBody defines body for CreateMedication for application/json ContentType.
+type CreateMedicationJSONRequestBody CreateMedicationJSONBody
+
 // UpdatePatientJSONRequestBody defines body for UpdatePatient for application/json ContentType.
 type UpdatePatientJSONRequestBody UpdatePatientJSONBody
 
 // NewPatientJSONRequestBody defines body for NewPatient for application/json ContentType.
 type NewPatientJSONRequestBody NewPatientJSONBody
+
+// CreatePrescriptionJSONRequestBody defines body for CreatePrescription for application/json ContentType.
+type CreatePrescriptionJSONRequestBody CreatePrescriptionJSONBody
 
 // CreateReportJSONRequestBody defines body for CreateReport for application/json ContentType.
 type CreateReportJSONRequestBody CreateReportJSONBody

@@ -65,6 +65,12 @@ type ServerInterface interface {
 	// (POST /private/episode/{episodeID}/collaboration)
 	CreateCollaboration(ctx echo.Context, episodeID string) error
 
+	// (GET /private/medication/{medicationID})
+	GetMedication(ctx echo.Context, medicationID string) error
+
+	// (POST /private/medications)
+	CreateMedication(ctx echo.Context) error
+
 	// (GET /private/network/inbox)
 	GetInbox(ctx echo.Context) error
 
@@ -85,6 +91,12 @@ type ServerInterface interface {
 
 	// (POST /private/patients)
 	NewPatient(ctx echo.Context) error
+
+	// (GET /private/prescriptions/{patientID})
+	GetPrescriptions(ctx echo.Context, patientID string, params GetPrescriptionsParams) error
+
+	// (POST /private/prescriptions/{patientID})
+	CreatePrescription(ctx echo.Context, patientID string) error
 
 	// (GET /private/reports/{patientID})
 	GetReports(ctx echo.Context, patientID string, params GetReportsParams) error
@@ -385,6 +397,35 @@ func (w *ServerInterfaceWrapper) CreateCollaboration(ctx echo.Context) error {
 	return err
 }
 
+// GetMedication converts echo context to params.
+func (w *ServerInterfaceWrapper) GetMedication(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "medicationID" -------------
+	var medicationID string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "medicationID", runtime.ParamLocationPath, ctx.Param("medicationID"), &medicationID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter medicationID: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{""})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetMedication(ctx, medicationID)
+	return err
+}
+
+// CreateMedication converts echo context to params.
+func (w *ServerInterfaceWrapper) CreateMedication(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(BearerAuthScopes, []string{""})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.CreateMedication(ctx)
+	return err
+}
+
 // GetInbox converts echo context to params.
 func (w *ServerInterfaceWrapper) GetInbox(ctx echo.Context) error {
 	var err error
@@ -498,6 +539,51 @@ func (w *ServerInterfaceWrapper) NewPatient(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.NewPatient(ctx)
+	return err
+}
+
+// GetPrescriptions converts echo context to params.
+func (w *ServerInterfaceWrapper) GetPrescriptions(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "patientID" -------------
+	var patientID string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "patientID", runtime.ParamLocationPath, ctx.Param("patientID"), &patientID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter patientID: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetPrescriptionsParams
+	// ------------- Optional query parameter "episodeID" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "episodeID", ctx.QueryParams(), &params.EpisodeID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter episodeID: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetPrescriptions(ctx, patientID, params)
+	return err
+}
+
+// CreatePrescription converts echo context to params.
+func (w *ServerInterfaceWrapper) CreatePrescription(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "patientID" -------------
+	var patientID string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "patientID", runtime.ParamLocationPath, ctx.Param("patientID"), &patientID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter patientID: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{""})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.CreatePrescription(ctx, patientID)
 	return err
 }
 
@@ -828,6 +914,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/private/episode/:episodeID", wrapper.GetEpisode)
 	router.GET(baseURL+"/private/episode/:episodeID/collaboration", wrapper.GetCollaboration)
 	router.POST(baseURL+"/private/episode/:episodeID/collaboration", wrapper.CreateCollaboration)
+	router.GET(baseURL+"/private/medication/:medicationID", wrapper.GetMedication)
+	router.POST(baseURL+"/private/medications", wrapper.CreateMedication)
 	router.GET(baseURL+"/private/network/inbox", wrapper.GetInbox)
 	router.GET(baseURL+"/private/network/inbox/info", wrapper.GetInboxInfo)
 	router.GET(baseURL+"/private/network/organizations", wrapper.SearchOrganizations)
@@ -835,6 +923,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/private/patient/:patientID", wrapper.UpdatePatient)
 	router.GET(baseURL+"/private/patients", wrapper.GetPatients)
 	router.POST(baseURL+"/private/patients", wrapper.NewPatient)
+	router.GET(baseURL+"/private/prescriptions/:patientID", wrapper.GetPrescriptions)
+	router.POST(baseURL+"/private/prescriptions/:patientID", wrapper.CreatePrescription)
 	router.GET(baseURL+"/private/reports/:patientID", wrapper.GetReports)
 	router.POST(baseURL+"/private/reports/:patientID", wrapper.CreateReport)
 	router.GET(baseURL+"/private/transfer", wrapper.GetPatientTransfers)

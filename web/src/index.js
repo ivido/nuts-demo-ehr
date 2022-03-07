@@ -1,5 +1,5 @@
-import {createApp} from 'vue'
-import {createRouter, createWebHashHistory} from 'vue-router'
+import { createApp } from 'vue'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 import './style.css'
 import store from "./ehr/store"
@@ -28,14 +28,15 @@ import Settings from "./ehr/Settings.vue"
 import Components from "./Components.vue"
 import Elevation from "./components/auth/SessionElevation.vue"
 import NewReport from "./ehr/patient/dossier/NewReport.vue"
+import NewPrescription from "./ehr/patient/dossier/NewPrescription.vue"
 
 const routes = [
-  {path: '/', component: Login},
+  { path: '/', component: Login },
   {
     name: 'login',
     path: '/login',
     component: Login,
-    props: route => ({redirectPath: route.query.redirect})
+    props: route => ({ redirectPath: route.query.redirect })
   },
   {
     name: 'logout',
@@ -46,13 +47,13 @@ const routes = [
     name: 'auth.passwd',
     path: '/auth/passwd/',
     component: PasswordAuthentication,
-    props: route => ({redirectPath: route.query.redirect})
+    props: route => ({ redirectPath: route.query.redirect })
   },
   {
     name: 'auth.irma',
     path: '/auth/irma/',
     component: IRMALogin,
-    props: route => ({redirectPath: route.query.redirect})
+    props: route => ({ redirectPath: route.query.redirect })
   },
   {
     path: '/ehr',
@@ -79,13 +80,13 @@ const routes = [
         path: 'elevate',
         name: 'ehr.elevate',
         component: Elevation,
-        props: route => ({redirectPath: route.query.redirect})
+        props: route => ({ redirectPath: route.query.redirect })
       },
       {
         path: 'patient/:id',
         name: 'ehr.patient',
         component: Patient,
-        redirect: {name: 'ehr.patient.overview'},
+        redirect: { name: 'ehr.patient.overview' },
         children: [
           {
             path: 'overview',
@@ -115,6 +116,10 @@ const routes = [
               path: 'newReport',
               name: 'ehr.patient.episode.newReport',
               component: NewReport
+            }, {
+              path: 'newPrescription',
+              name: 'ehr.patient.episode.newPrescription',
+              component: NewPrescription
             }]
           },
           {
@@ -138,7 +143,7 @@ const routes = [
         path: 'inbox',
         name: 'ehr.inbox',
         component: Inbox,
-        meta: {requiresElevation: true}
+        meta: { requiresElevation: true }
       },
       {
         path: 'settings',
@@ -146,10 +151,10 @@ const routes = [
         component: Settings
       }
     ],
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true }
   },
-  {path: '/test/components', component: Components},
-  {path: '/:pathMatch*', name: 'NotFound', component: NotFound}
+  { path: '/test/components', component: Components },
+  { path: '/:pathMatch*', name: 'NotFound', component: NotFound }
 ]
 
 const router = createRouter({
@@ -164,7 +169,7 @@ router.beforeEach((to, from, next) => {
   // Check before rendering the target route that we're authenticated, if it's required by the particular route.
   if (to.meta.requiresAuth === true) {
     if (!localStorage.getItem("session")) {
-      return next({name: 'login', props: true, query: {redirect: to.path}})
+      return next({ name: 'login', props: true, query: { redirect: to.path } })
     }
   }
   if (to.meta.requiresElevation === true) {
@@ -172,7 +177,7 @@ router.beforeEach((to, from, next) => {
     let rawToken = atob(sessionStr.split('.')[1])
     let token = JSON.parse(rawToken)
     if (!token["elv"]) {
-      return next({name: 'ehr.elevate', props: true, query: {redirect: to.path}})
+      return next({ name: 'ehr.elevate', props: true, query: { redirect: to.path } })
     }
   }
   next()
@@ -180,6 +185,6 @@ router.beforeEach((to, from, next) => {
 
 app.use(router)
 app.use(StatusReporter)
-app.use(Api, {forbiddenRoute: {name: 'logout'}})
+app.use(Api, { forbiddenRoute: { name: 'logout' } })
 app.use(store)
 app.mount('#app')

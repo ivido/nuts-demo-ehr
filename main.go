@@ -17,14 +17,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nuts-foundation/nuts-demo-ehr/domain/reports"
-	"github.com/nuts-foundation/nuts-demo-ehr/domain/zno"
-
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/episode"
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/notification"
+	"github.com/nuts-foundation/nuts-demo-ehr/domain/prescriptions"
+	"github.com/nuts-foundation/nuts-demo-ehr/domain/reports"
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/transfer/receiver"
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/transfer/sender"
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/types"
+	"github.com/nuts-foundation/nuts-demo-ehr/domain/zno"
 
 	"github.com/nuts-foundation/nuts-demo-ehr/api"
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/customers"
@@ -176,6 +176,7 @@ func registerEHR(server *echo.Echo, config Config, customerRepository customers.
 	fhirClientFactory := fhir.NewFactory(fhir.WithURL(config.FHIR.Server.Address), fhir.WithMultiTenancyEnabled(config.FHIR.Server.SupportsMultiTenancy()))
 	patientRepository := patients.NewFHIRPatientRepository(patients.Factory{}, fhirClientFactory)
 	reportRepository := reports.NewFHIRRepository(fhirClientFactory)
+	prescriptionRepository := prescriptions.NewFHIRRepository(fhirClientFactory)
 	orgRegistry := registry.NewOrganizationRegistry(&nodeClient)
 	dossierRepository := dossier.NewSQLiteDossierRepository(dossier.Factory{}, sqlDB)
 	transferSenderRepo := sender.NewTransferRepository(sqlDB)
@@ -212,6 +213,7 @@ func registerEHR(server *echo.Echo, config Config, customerRepository customers.
 		CustomerRepository:      customerRepository,
 		PatientRepository:       patientRepository,
 		ReportRepository:        reportRepository,
+		PrescriptionRepository:  prescriptionRepository,
 		DossierRepository:       dossier.NewSQLiteDossierRepository(dossier.Factory{}, sqlDB),
 		TransferSenderRepo:      transferSenderRepo,
 		OrganizationRegistry:    orgRegistry,

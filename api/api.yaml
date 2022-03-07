@@ -15,13 +15,13 @@ paths:
             schema:
               $ref: "#/components/schemas/Customer"
       responses:
-        '200':
+        "200":
           description: A session was succesfully created
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/SessionToken"
-        '403':
+        "403":
           description: Invalid credentials
 
   # Password authentication
@@ -36,9 +36,9 @@ paths:
             schema:
               $ref: "#/components/schemas/PasswordAuthenticateRequest"
       responses:
-        '204':
+        "204":
           description: Authentication successful.
-        '403':
+        "403":
           description: Invalid credentials
   # IRMA authentication
   /auth/irma/session:
@@ -46,7 +46,7 @@ paths:
       description: Create an IRMA signing session.
       operationId: authenticateWithIRMA
       responses:
-        '200':
+        "200":
           description: An IRMA signing session was succesfully created
           content:
             application/json:
@@ -65,7 +65,7 @@ paths:
         After a successful IRMA signing session the resulting signature can be fetched using his endpoint.
       operationId: getIRMAAuthenticationResult
       responses:
-        '200':
+        "200":
           description: Session result
           content:
             application/json:
@@ -76,7 +76,7 @@ paths:
       description: Create a dummy signing session.
       operationId: authenticateWithDummy
       responses:
-        '200':
+        "200":
           description: A Dummy signing session was succesfully created
           content:
             application/json:
@@ -95,7 +95,7 @@ paths:
         After a successful Dummy signing session the resulting token can be fetched using his endpoint.
       operationId: getDummyAuthenticationResult
       responses:
-        '200':
+        "200":
           description: Session result
           content:
             application/json:
@@ -107,9 +107,9 @@ paths:
       description: Checks whether the current session is valid. If not, the client should authenticate before calling other API operations.
       operationId: checkSession
       responses:
-        '204':
+        "204":
           description: The session is valid.
-        '400':
+        "400":
           description: The session is invalid.
 
   /private/customer:
@@ -265,14 +265,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTransferRequest'
+              $ref: "#/components/schemas/CreateTransferRequest"
       responses:
         200:
           description: Transfer created.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Transfer'
+                $ref: "#/components/schemas/Transfer"
         404:
           description: Patient not found
         400:
@@ -293,7 +293,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Transfer'
+                $ref: "#/components/schemas/Transfer"
         404:
           description: Transfer not found
   /private/transfer/{transferID}:
@@ -313,7 +313,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Transfer'
+                $ref: "#/components/schemas/Transfer"
         404:
           description: Transfer not found
     put:
@@ -324,14 +324,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TransferProperties'
+              $ref: "#/components/schemas/TransferProperties"
       responses:
         200:
           description: Transfer updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Transfer'
+                $ref: "#/components/schemas/Transfer"
         404:
           description: Transfer not found
     delete:
@@ -343,7 +343,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Transfer'
+                $ref: "#/components/schemas/Transfer"
 
   /private/transfer/{transferID}/assign:
     parameters:
@@ -363,7 +363,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTransferNegotiationRequest'
+              $ref: "#/components/schemas/CreateTransferNegotiationRequest"
       responses:
         204:
           description: Transfer accepted.
@@ -390,7 +390,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TransferNegotiation'
+                  $ref: "#/components/schemas/TransferNegotiation"
     post:
       description: >
         Start a negotiation with a care organization for this transfer.
@@ -401,14 +401,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTransferNegotiationRequest'
+              $ref: "#/components/schemas/CreateTransferNegotiationRequest"
       responses:
         200:
           description: Negotiation started.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransferNegotiation'
+                $ref: "#/components/schemas/TransferNegotiation"
         404:
           description: Patient or transfer not found
         400:
@@ -436,14 +436,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TransferNegotiationStatus'
+              $ref: "#/components/schemas/TransferNegotiationStatus"
       responses:
         200:
           description: Negotiation status updated.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransferNegotiation'
+                $ref: "#/components/schemas/TransferNegotiation"
         404:
           description: transfer or negotiation not found.
         400:
@@ -566,7 +566,6 @@ paths:
                 items:
                   $ref: "#/components/schemas/InboxEntry"
 
-
   /private/network/inbox/info:
     get:
       description: Returns info about the current state of the inbox (message count).
@@ -620,8 +619,94 @@ paths:
         200:
           description: The creation of the new report is completed
           content:
-            applaction/json:
+            application/json:
               schema:
+                $ref: "#/components/schemas/Report"
+
+  /private/prescriptions/{patientID}:
+    parameters:
+      - name: patientID
+        in: path
+        description: The patient ID
+        required: true
+        schema:
+          type: string
+    get:
+      parameters:
+        - name: episodeID
+          in: query
+          description: The identifier of episode the prescription must be part of.
+          required: false
+          schema:
+            type: string
+      description: Get list of prescriptions for a patient
+      operationId: getPrescriptions
+      responses:
+        200:
+          description: The list of prescriptions for the patient
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Prescription"
+
+    post:
+      description: Create a new prescription for a patient
+      operationId: createPrescription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Prescription"
+      responses:
+        200:
+          description: The creation of the new prescription is completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Prescription"
+  /private/medications:
+    post:
+      description: Create a medication
+      operationId: createMedication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Medication"
+      responses:
+        200:
+          description: The created medication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Medication"
+        404:
+          description: The patient or the doctor does not exist
+
+  /private/medication/{medicationID}:
+    get:
+      description: Get the medication by the medicationID
+      operationId: getMedication
+      parameters:
+        - name: medicationID
+          in: path
+          description: The medication ID
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: The requested medication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Medication"
+        404:
+          description: The medication does not exist
   /private/dossier/{patientID}:
     get:
       description: Get list of dossiers for a patient
@@ -738,8 +823,7 @@ components:
         did:
           type: string
           description: The customer DID.
-          example:
-            "did:nuts:123"
+          example: "did:nuts:123"
         name:
           type: string
           description: Internal name for this customer.
@@ -761,9 +845,9 @@ components:
         - organizationName
       properties:
         id:
-          $ref: '#/components/schemas/ObjectID'
+          $ref: "#/components/schemas/ObjectID"
         episodeID:
-          $ref: '#/components/schemas/ObjectID'
+          $ref: "#/components/schemas/ObjectID"
         organizationDID:
           type: string
           description: The DID of the collaborator
@@ -809,7 +893,7 @@ components:
         gender:
           description: Gender of the person according to https://www.hl7.org/fhir/valueset-administrative-gender.html.
           type: string
-          enum: [ male, female, other, unknown ]
+          enum: [male, female, other, unknown]
           default: unknown
         dob:
           description: Date of birth.
@@ -883,10 +967,11 @@ components:
         status:
           description: Status of the negotiation, maps to FHIR eOverdracht task states (https://informatiestandaarden.nictiz.nl/wiki/vpk:V4.0_FHIR_eOverdracht#Using_Task_to_manage_the_workflow).
           type: string
-          enum: [ requested, accepted, in-progress, completed, on-hold, cancelled ]
+          enum:
+            [requested, accepted, in-progress, completed, on-hold, cancelled]
     TransferNegotiation:
       allOf:
-        - $ref: '#/components/schemas/TransferNegotiationStatus'
+        - $ref: "#/components/schemas/TransferNegotiationStatus"
         - type: object
           required:
             - id
@@ -897,9 +982,9 @@ components:
             - transferDate
           properties:
             id:
-              $ref: '#/components/schemas/ObjectID'
+              $ref: "#/components/schemas/ObjectID"
             transferID:
-              $ref: '#/components/schemas/ObjectID'
+              $ref: "#/components/schemas/ObjectID"
             organizationDID:
               description: Decentralized Identifier of the organization to which transfer of a patient is requested.
               type: string
@@ -907,7 +992,7 @@ components:
               description: The id of the FHIR Task resource which tracks this negotiation.
               type: string
             organization:
-              $ref: '#/components/schemas/Organization'
+              $ref: "#/components/schemas/Organization"
             transferDate:
               description: Transfer date subject of the negotiation. Can be altered by both sending and receiving care organization.
               type: string
@@ -921,9 +1006,9 @@ components:
         - carePlan
       properties:
         carePlan:
-          $ref: '#/components/schemas/CarePlan'
+          $ref: "#/components/schemas/CarePlan"
         patient:
-          $ref: '#/components/schemas/Patient'
+          $ref: "#/components/schemas/Patient"
         transferDate:
           description: Transfer date as proposed by the sending XIS. It is populated/updated by the last negotiation that was started.
           type: string
@@ -938,7 +1023,7 @@ components:
         patientProblems:
           type: array
           items:
-            $ref: '#/components/schemas/PatientProblem'
+            $ref: "#/components/schemas/PatientProblem"
 
     PatientProblem:
       description: A problem as defined by https://decor.nictiz.nl/pub/eoverdracht/e-overdracht-html-20210510T093529/tr-2.16.840.1.113883.2.4.3.11.60.30.4.63-2021-01-27T000000.html#_2.16.840.1.113883.2.4.3.11.60.30.22.4.531_20210126000000
@@ -947,11 +1032,11 @@ components:
         - interventions
       properties:
         problem:
-          $ref: '#/components/schemas/Problem'
+          $ref: "#/components/schemas/Problem"
         interventions:
           type: array
           items:
-            $ref: '#/components/schemas/Intervention'
+            $ref: "#/components/schemas/Intervention"
     Problem:
       required:
         - name
@@ -962,7 +1047,7 @@ components:
           type: string
         status:
           type: string
-          enum: [ active, inactive ]
+          enum: [active, inactive]
     Intervention:
       required:
         - comment
@@ -986,7 +1071,7 @@ components:
         - sender
       properties:
         sender:
-          $ref: '#/components/schemas/Organization'
+          $ref: "#/components/schemas/Organization"
     CreateEpisodeRequest:
       description: >
         Request to create a episode.
@@ -996,11 +1081,11 @@ components:
         - period
       properties:
         dossierID:
-          $ref: '#/components/schemas/ObjectID'
+          $ref: "#/components/schemas/ObjectID"
         diagnosis:
           type: string
         period:
-          $ref: '#/components/schemas/Period'
+          $ref: "#/components/schemas/Period"
 
     Episode:
       description: >
@@ -1011,7 +1096,7 @@ components:
         - period
       properties:
         id:
-          $ref: '#/components/schemas/ObjectID'
+          $ref: "#/components/schemas/ObjectID"
         status:
           type: string
           enum:
@@ -1025,25 +1110,25 @@ components:
         diagnosis:
           type: string
         period:
-          $ref: '#/components/schemas/Period'
+          $ref: "#/components/schemas/Period"
     CreateTransferRequest:
       description: >
         Create a new transfer for a specific dossier with a date and description.
       allOf:
-        - $ref: '#/components/schemas/TransferProperties'
+        - $ref: "#/components/schemas/TransferProperties"
         - type: object
           required:
             - dossierID
           properties:
             dossierID:
-              $ref: '#/components/schemas/ObjectID'
+              $ref: "#/components/schemas/ObjectID"
     Transfer:
       description: >
         A dossier for transferring a patient to another care organization. It is composed of negotiations with specific care organizations.
         The patient can be transferred to one of the care organizations that accepted the transfer.
         TODO: proposing/handling alternative transfer dates is not supported yet.
       allOf:
-        - $ref: '#/components/schemas/TransferProperties'
+        - $ref: "#/components/schemas/TransferProperties"
         - type: object
           required:
             - id
@@ -1052,9 +1137,9 @@ components:
             - fhirAdvanceNoticeComposition
           properties:
             id:
-              $ref: '#/components/schemas/ObjectID'
+              $ref: "#/components/schemas/ObjectID"
             dossierID:
-              $ref: '#/components/schemas/ObjectID'
+              $ref: "#/components/schemas/ObjectID"
             status:
               description: >
                 Status of the transfer. If the state is "completed" or "cancelled" the transfer dossier becomes read-only.
@@ -1065,7 +1150,7 @@ components:
                 - Completed: the patient transfer is completed and marked as such by the receiving care organization.
                 - Cancelled: the transfer is cancelled by the sending care organization.
               type: string
-              enum: [ created, requested, assigned, completed, cancelled ]
+              enum: [created, requested, assigned, completed, cancelled]
             fhirAdvanceNoticeComposition:
               description: Reference to the FHIR composition resource that describes the advance notice, according to the Nictiz eOverdracht FHIR specification.
               type: string
@@ -1079,7 +1164,7 @@ components:
         - name
       properties:
         patientID:
-          $ref: '#/components/schemas/ObjectID'
+          $ref: "#/components/schemas/ObjectID"
         name:
           type: string
     TransferRequest:
@@ -1090,11 +1175,11 @@ components:
         - advanceNotice
       properties:
         sender:
-          $ref: '#/components/schemas/Organization'
+          $ref: "#/components/schemas/Organization"
         advanceNotice:
-          $ref: '#/components/schemas/TransferProperties'
+          $ref: "#/components/schemas/TransferProperties"
         nursingHandoff:
-          $ref: '#/components/schemas/TransferProperties'
+          $ref: "#/components/schemas/TransferProperties"
         transferDate:
           description: Requested transfer date.
           type: string
@@ -1111,11 +1196,11 @@ components:
         - source
       properties:
         id:
-          $ref: '#/components/schemas/ObjectID'
+          $ref: "#/components/schemas/ObjectID"
         patientID:
-          $ref: '#/components/schemas/ObjectID'
+          $ref: "#/components/schemas/ObjectID"
         episodeID:
-          $ref: '#/components/schemas/ObjectID'
+          $ref: "#/components/schemas/ObjectID"
         type:
           type: string
         value:
@@ -1124,6 +1209,36 @@ components:
           type: string
         episodeName:
           type: string
+    Prescription:
+      required:
+        - id
+        - patientID
+      properties:
+        id:
+          $ref: "#/components/schemas/ObjectID"
+        patientID:
+          $ref: "#/components/schemas/ObjectID"
+        episodeID:
+          $ref: "#/components/schemas/ObjectID"
+        medicationID:
+          $ref: "#/components/schemas/ObjectID"
+        medicationName:
+          type: string
+        source:
+          type: string
+        episodeName:
+          type: string
+    Medication:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          $ref: "#/components/schemas/ObjectID"
+        name:
+          type: string
+        source:
+          type: string
     Dossier:
       required:
         - id
@@ -1131,9 +1246,9 @@ components:
         - name
       properties:
         id:
-          $ref: '#/components/schemas/ObjectID'
+          $ref: "#/components/schemas/ObjectID"
         patientID:
-          $ref: '#/components/schemas/ObjectID'
+          $ref: "#/components/schemas/ObjectID"
         name:
           type: string
     InboxInfo:
@@ -1193,7 +1308,7 @@ components:
       bearerFormat: JWT
 
 security:
-  - bearerAuth: [ ] # Apply Bearer Auth to all endpoints
+  - bearerAuth: [] # Apply Bearer Auth to all endpoints
 
 servers:
   - url: "/web"

@@ -24,6 +24,34 @@ const (
 	EpisodeStatusEnteredInError = datatypes.Code("entered-in-error")
 )
 
+// Codes for the status of an MedicationRequest
+const (
+	MedicationRequestStatusActive         = datatypes.Code("active")
+	MedicationRequestStatusOnHold         = datatypes.Code("on-hold")
+	MedicationRequestStatusCancelled      = datatypes.Code("cancelled")
+	MedicationRequestStatusEnteredInError = datatypes.Code("entered-in-error")
+	MedicationRequestStatusCompleted 	  = datatypes.Code("completed")
+	MedicationRequestStatusStopped        = datatypes.Code("stopped")
+	MedicationRequestStatusDraft          = datatypes.Code("draft")
+	MedicationRequestStatusUnknown        = datatypes.Code("unknown")
+)
+
+// Codes for the intent of an MedicationRequest
+const (
+	MedicationRequestIntentProposal      = datatypes.Code("proposal")
+	MedicationRequestIntentPlan        	 = datatypes.Code("plan")
+	MedicationRequestIntentOrder         = datatypes.Code("order")
+	MedicationRequestIntentInstanceOrder = datatypes.Code("instance-order")
+)
+
+// Codes for the priority of an MedicationRequest
+const (
+	MedicationRequestPriorityRoutine     = datatypes.Code("routine")
+	MedicationRequestPriorityUrgent      = datatypes.Code("urgent")
+	MedicationRequestPriorityStat        = datatypes.Code("stat")
+	MedicationRequestPriorityAsap        = datatypes.Code("asap")
+)
+
 type TaskProperties struct {
 	ID        *string
 	Status    string
@@ -81,3 +109,44 @@ type EpisodeOfCare struct {
 	Team                 []datatypes.Reference       `json:"team,omitempty"`
 	Account              []datatypes.Reference       `json:"account,omitempty"`
 }
+
+
+// MedicationRequest defines a basic FHIR STU3 MedicationRequest resource which is currently not included in the FHIR library.
+type MedicationRequest struct {
+	resources.Base
+	Identifier            []datatypes.Identifier      `json:"identifier,omitempty"`
+	Definition			  []datatypes.Reference  	 `json:"definition,omitempty"`
+	BasedOn			 	  []datatypes.Reference  	 `json:"basedOn,omitempty"`
+	GroupIdentifier       []datatypes.Identifier      `json:"groupIdentifier,omitempty"`
+	Status                datatypes.Code              `json:"status"`
+	Intent                datatypes.Code              `json:"intent"`
+	Category              *datatypes.CodeableConcept `json:"category,omitempty"`
+	Priority              datatypes.Code              `json:"priority"`
+	MedicationReference   datatypes.Reference         `json:"medicationReference"`
+	Subject               datatypes.Reference         `json:"subject"`
+	Context               *datatypes.Reference         `json:"context,omitempty"`
+	SupportingInformation *datatypes.Reference        `json:"supportingInformation,omitempty"`
+	AuthoredOn            datatypes.DateTime          `json:"authoredOn,omitempty"`
+	Requester 			  datatypes.BackboneElement   `json:"requester,omitempty"`
+	Recorder              datatypes.Reference         `json:"recorder,omitempty"`
+	ReasonCode		 	  datatypes.CodeableConcept	  `json:"reasonCode,omitempty"`
+	ReasonReference       []datatypes.Reference       `json:"reasonReference,omitempty"`
+	Note				  datatypes.Annotation		  `json:"note,omitempty"`
+	DosageInstruction	  datatypes.Dosage			  `json:"dosageInstruction,omitempty"`		
+	DispenseRequest		  datatypes.BackboneElement	  `json:"dispenseRequest,omitempty"`
+	Substitution		  datatypes.BackboneElement	  `json:"substitution,omitempty"`
+	PriorPrescription     datatypes.Reference         `json:"priorPrescription,omitempty"`
+	/*
+	detectedIssue
+	eventHistory
+	*/
+}
+
+
+// Medication defines a basic FHIR STU3 Medication resource which is currently not included in the FHIR library.
+type Medication struct {
+	resources.Base
+	Identifier            []datatypes.Identifier      `json:"identifier,omitempty"`
+	Code                 *datatypes.CodeableConcept          `json:"code,omitempty"`
+}
+

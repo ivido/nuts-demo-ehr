@@ -12,7 +12,7 @@ function createApi(options) {
       for (let j = 0, jlen = schemeParts.length; j < jlen; j++) {
         let schemePart = schemeParts[j];
         let fulfilsSecurityRequirements = securityHandlers[schemePart](
-            headers, params, schemePart);
+          headers, params, schemePart);
         if (fulfilsSecurityRequirements) {
           return;
         }
@@ -27,7 +27,7 @@ function createApi(options) {
       let requiredSecurityHandler = requiredSecurityHandlers[i];
       if (typeof securityHandlers[requiredSecurityHandler] !== 'function') {
         throw new Error('Expected to see a security handler for scheme "' +
-            requiredSecurityHandler + '" in options.securityHandlers');
+          requiredSecurityHandler + '" in options.securityHandlers');
       }
     }
   };
@@ -53,7 +53,7 @@ function createApi(options) {
           return key + '=' + encodeURIComponent(value);
         }
       }).join('&');
-    };
+  };
   return {
     setCustomer(parameters) {
       const params = typeof parameters === 'undefined' ? {} : parameters;
@@ -61,8 +61,8 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'setCustomer');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'setCustomer');
       return fetch(endpoint + basePath + '/auth'
         , {
           method: 'POST',
@@ -77,8 +77,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'authenticateWithDummy');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'authenticateWithDummy');
       return fetch(endpoint + basePath + '/auth/dummy'
         , {
           method: 'POST',
@@ -91,8 +91,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getDummyAuthenticationResult');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getDummyAuthenticationResult');
       return fetch(endpoint + basePath + '/auth/dummy/session/' + params['sessionToken'] + '/result'
         , {
           method: 'GET',
@@ -105,8 +105,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'authenticateWithIRMA');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'authenticateWithIRMA');
       return fetch(endpoint + basePath + '/auth/irma/session'
         , {
           method: 'POST',
@@ -119,8 +119,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getIRMAAuthenticationResult');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getIRMAAuthenticationResult');
       return fetch(endpoint + basePath + '/auth/irma/session/' + params['sessionToken'] + '/result'
         , {
           method: 'GET',
@@ -134,8 +134,8 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'authenticateWithPassword');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'authenticateWithPassword');
       return fetch(endpoint + basePath + '/auth/passwd'
         , {
           method: 'POST',
@@ -150,8 +150,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'listCustomers');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'listCustomers');
       return fetch(endpoint + basePath + '/customers'
         , {
           method: 'GET',
@@ -164,8 +164,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'notifyTransferUpdate');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'notifyTransferUpdate');
       return fetch(endpoint + basePath + '/external/transfer/notify/' + params['taskID'] + ''
         , {
           method: 'POST',
@@ -178,8 +178,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'taskUpdate');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'taskUpdate');
       return fetch(endpoint + basePath + '/internal/customer/' + params['customerID'] + '/task/' + params['taskID'] + ''
         , {
           method: 'PUT',
@@ -192,8 +192,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'checkSession');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'checkSession');
       return fetch(endpoint + basePath + '/private'
         , {
           method: 'GET',
@@ -206,8 +206,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getCustomer');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getCustomer');
       return fetch(endpoint + basePath + '/private/customer'
         , {
           method: 'GET',
@@ -221,8 +221,8 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'createDossier');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'createDossier');
       return fetch(endpoint + basePath + '/private/dossier'
         , {
           method: 'POST',
@@ -237,8 +237,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getDossier');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getDossier');
       return fetch(endpoint + basePath + '/private/dossier/' + params['patientID'] + ''
         , {
           method: 'GET',
@@ -252,8 +252,8 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'createEpisode');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'createEpisode');
       return fetch(endpoint + basePath + '/private/episode'
         , {
           method: 'POST',
@@ -268,8 +268,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getEpisode');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getEpisode');
       return fetch(endpoint + basePath + '/private/episode/' + params['episodeID'] + ''
         , {
           method: 'GET',
@@ -282,8 +282,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getCollaboration');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getCollaboration');
       return fetch(endpoint + basePath + '/private/episode/' + params['episodeID'] + '/collaboration'
         , {
           method: 'GET',
@@ -297,8 +297,8 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'createCollaboration');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'createCollaboration');
       return fetch(endpoint + basePath + '/private/episode/' + params['episodeID'] + '/collaboration'
         , {
           method: 'POST',
@@ -313,8 +313,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getInbox');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getInbox');
       return fetch(endpoint + basePath + '/private/network/inbox'
         , {
           method: 'GET',
@@ -327,8 +327,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getInboxInfo');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getInboxInfo');
       return fetch(endpoint + basePath + '/private/network/inbox/info'
         , {
           method: 'GET',
@@ -341,12 +341,12 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'searchOrganizations');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'searchOrganizations');
       return fetch(endpoint + basePath + '/private/network/organizations' + '?' + buildQuery({
-          'query': params['query'],
-          'didServiceType': params['didServiceType'],
-        })
+        'query': params['query'],
+        'didServiceType': params['didServiceType'],
+      })
 
         , {
           method: 'GET',
@@ -359,8 +359,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getPatient');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getPatient');
       return fetch(endpoint + basePath + '/private/patient/' + params['patientID'] + ''
         , {
           method: 'GET',
@@ -374,8 +374,8 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'updatePatient');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'updatePatient');
       return fetch(endpoint + basePath + '/private/patient/' + params['patientID'] + ''
         , {
           method: 'PUT',
@@ -390,11 +390,11 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getPatients');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getPatients');
       return fetch(endpoint + basePath + '/private/patients' + '?' + buildQuery({
-          'name': params['name'],
-        })
+        'name': params['name'],
+      })
 
         , {
           method: 'GET',
@@ -408,8 +408,8 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'newPatient');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'newPatient');
       return fetch(endpoint + basePath + '/private/patients'
         , {
           method: 'POST',
@@ -424,11 +424,11 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getReports');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getReports');
       return fetch(endpoint + basePath + '/private/reports/' + params['patientID'] + '' + '?' + buildQuery({
-          'episodeID': params['episodeID'],
-        })
+        'episodeID': params['episodeID'],
+      })
 
         , {
           method: 'GET',
@@ -442,9 +442,43 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'createReport');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'createReport');
       return fetch(endpoint + basePath + '/private/reports/' + params['patientID'] + ''
+        , {
+          method: 'POST',
+          headers,
+          mode,
+          body: JSON.stringify(params['body']),
+
+        });
+    },
+    getPrescriptions(parameters) {
+      const params = typeof parameters === 'undefined' ? {} : parameters;
+      let headers = {
+
+      };
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getPrescriptions');
+      return fetch(endpoint + basePath + '/private/prescriptions/' + params['patientID'] + '' + '?' + buildQuery({
+        'episodeID': params['episodeID'],
+      })
+
+        , {
+          method: 'GET',
+          headers,
+          mode,
+        });
+    },
+    createPrescription(parameters) {
+      const params = typeof parameters === 'undefined' ? {} : parameters;
+      let headers = {
+        'content-type': 'application/json',
+
+      };
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'createPrescription');
+      return fetch(endpoint + basePath + '/private/prescriptions/' + params['patientID'] + ''
         , {
           method: 'POST',
           headers,
@@ -458,11 +492,11 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getPatientTransfers');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getPatientTransfers');
       return fetch(endpoint + basePath + '/private/transfer' + '?' + buildQuery({
-          'patientID': params['patientID'],
-        })
+        'patientID': params['patientID'],
+      })
 
         , {
           method: 'GET',
@@ -476,8 +510,8 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'createTransfer');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'createTransfer');
       return fetch(endpoint + basePath + '/private/transfer'
         , {
           method: 'POST',
@@ -492,8 +526,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getTransferRequest');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getTransferRequest');
       return fetch(endpoint + basePath + '/private/transfer-request/' + params['requestorDID'] + '/' + params['fhirTaskID'] + ''
         , {
           method: 'GET',
@@ -507,8 +541,8 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'changeTransferRequestState');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'changeTransferRequestState');
       return fetch(endpoint + basePath + '/private/transfer-request/' + params['requestorDID'] + '/' + params['fhirTaskID'] + ''
         , {
           method: 'POST',
@@ -523,8 +557,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'cancelTransfer');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'cancelTransfer');
       return fetch(endpoint + basePath + '/private/transfer/' + params['transferID'] + ''
         , {
           method: 'DELETE',
@@ -537,8 +571,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getTransfer');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getTransfer');
       return fetch(endpoint + basePath + '/private/transfer/' + params['transferID'] + ''
         , {
           method: 'GET',
@@ -552,8 +586,8 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'updateTransfer');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'updateTransfer');
       return fetch(endpoint + basePath + '/private/transfer/' + params['transferID'] + ''
         , {
           method: 'PUT',
@@ -569,8 +603,8 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'assignTransferDirect');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'assignTransferDirect');
       return fetch(endpoint + basePath + '/private/transfer/' + params['transferID'] + '/assign'
         , {
           method: 'PUT',
@@ -585,8 +619,8 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'listTransferNegotiations');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'listTransferNegotiations');
       return fetch(endpoint + basePath + '/private/transfer/' + params['transferID'] + '/negotiation'
         , {
           method: 'GET',
@@ -600,8 +634,8 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'startTransferNegotiation');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'startTransferNegotiation');
       return fetch(endpoint + basePath + '/private/transfer/' + params['transferID'] + '/negotiation'
         , {
           method: 'POST',
@@ -617,8 +651,8 @@ function createApi(options) {
         'content-type': 'application/json',
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'updateTransferNegotiationStatus');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'updateTransferNegotiationStatus');
       return fetch(endpoint + basePath + '/private/transfer/' + params['transferID'] + '/negotiation/' + params['negotiationID'] + ''
         , {
           method: 'PUT',
