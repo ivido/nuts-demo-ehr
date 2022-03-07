@@ -20,7 +20,15 @@ func (w Wrapper) GetZnoSsoInfo(ctx echo.Context, params GetZnoSsoInfoParams) err
 		return err
 	}
 
-	jwt, err := w.ZnoService.CreateSsoJwt(*patient)
+	authJwt, err := w.APIAuth.extractJWTFromHeader(ctx)
+	if err != nil {
+		return err
+	}
+
+	sid, _ := authJwt.Get("sid")
+	sess := w.APIAuth.GetSessions()[sid.(string)]
+
+	jwt, err := w.ZnoService.CreateSsoJwt(*patient, sess.Credential)
 	if err != nil {
 		return err
 	}
