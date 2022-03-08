@@ -52,6 +52,7 @@ import (
 
 const assetPath = "web/dist"
 
+//go:embed web/dist/*
 var embeddedFiles embed.FS
 
 const apiTimeout = 10 * time.Second
