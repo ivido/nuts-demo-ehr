@@ -687,17 +687,10 @@ paths:
         404:
           description: The patient or the doctor does not exist
 
-  /private/medication/{medicationID}:
+  /private/medication:
     get:
-      description: Get the medication by the medicationID
+      description: Get the medications
       operationId: getMedication
-      parameters:
-        - name: medicationID
-          in: path
-          description: The medication ID
-          required: true
-          schema:
-            type: string
       responses:
         200:
           description: The requested medication
@@ -1209,6 +1202,20 @@ components:
           type: string
         episodeName:
           type: string
+    Dosage:
+      properties:
+        quantity:
+          type: integer
+        amount:
+          type: integer
+        unit:
+          type: string
+        frequency:
+          type: integer
+        period:
+          type: integer
+        instructions:
+          type: string
     Prescription:
       required:
         - id
@@ -1228,6 +1235,8 @@ components:
           type: string
         episodeName:
           type: string
+        dosage:
+          $ref: "#/components/schemas/Dosage"
     Medication:
       required:
         - id

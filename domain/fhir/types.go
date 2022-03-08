@@ -132,7 +132,7 @@ type MedicationRequest struct {
 	ReasonCode		 	  datatypes.CodeableConcept	  `json:"reasonCode,omitempty"`
 	ReasonReference       []datatypes.Reference       `json:"reasonReference,omitempty"`
 	Note				  datatypes.Annotation		  `json:"note,omitempty"`
-	DosageInstruction	  datatypes.Dosage			  `json:"dosageInstruction,omitempty"`		
+	DosageInstruction	  []datatypes.Dosage			  `json:"dosageInstruction,omitempty"`		
 	DispenseRequest		  datatypes.BackboneElement	  `json:"dispenseRequest,omitempty"`
 	Substitution		  datatypes.BackboneElement	  `json:"substitution,omitempty"`
 	PriorPrescription     datatypes.Reference         `json:"priorPrescription,omitempty"`

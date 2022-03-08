@@ -29,35 +29,15 @@ func NewFHIRRepository(factory fhir.Factory) *fhirRepository {
 	}
 }
 
+
+
 func (repo *fhirRepository) Create(ctx context.Context, customerID int, patientID string, prescription types.Prescription)  (*types.Prescription, error) {
 	if prescription.Id == "" {
 		prescription.Id = types.ObjectID(uuid.NewString())
 	}
 
-	// @TODO: hacky way to put the default medication in the fhir db, will fix this later
-	fhirClient := repo.factory(fhir.WithTenant(customerID))
-	fhirMedication := &fhir.Medication{
-		Base: resources.Base{
-			ID:           fhir.ToIDPtr("2fba9b2c-7c46-45a2-acb3-8f653fa9e52a"),
-			ResourceType: "Medication",
-		},
-		Code: &datatypes.CodeableConcept{
-			Coding: []datatypes.Coding{{
-				System:  fhir.ToUriPtr("urn:oid:2.16.840.1.113883.2.4.4.10"),
-				Code:    fhir.ToCodePtr("29998"),
-				Display: fhir.ToStringPtr("INSULINE INSULATARD INJ 100IE/ML FLACON 10M"),
-			},
-			{	System:   fhir.ToUriPtr("urn:oid:2.16.840.1.113883.2.4.4.1"),
-				Code:    fhir.ToCodePtr("111325"),}},
-			},
-	};
-	err := fhirClient.ReadOne(ctx, "Medication/2fba9b2c-7c46-45a2-acb3-8f653fa9e52a", &fhirMedication)
-	if err != nil {
-		fhirClient.CreateOrUpdate(ctx, fhirMedication)
-	}
-				
-
 	medicationRequest, err := convertToFHIR(prescription)
+
 	if err != nil {
 		return nil,fmt.Errorf("unable to convert prescription to FHIR MedicationRequest: %w", err)
 	}
@@ -76,6 +56,17 @@ func convertToFHIR(prescription types.Prescription) (*fhir.MedicationRequest, er
 	* @TODO: add fields needed 
 	*
 	*/
+	dosage_value:= datatypes.Decimal(*prescription.Dosage.Quantity);
+
+	dosage_frequency:= datatypes.Integer(*prescription.Dosage.Frequency);
+
+	dosage_unit:= datatypes.String(*prescription.Dosage.Unit);
+
+	dosage_amount:= datatypes.Decimal(*prescription.Dosage.Amount);
+
+	dosage_period:= datatypes.Decimal(*prescription.Dosage.Period);
+	
+
 		medicationRequest := &fhir.MedicationRequest{
 			Base: resources.Base{
 					ID:           fhir.ToIDPtr(string(prescription.Id)),
@@ -89,7 +80,7 @@ func convertToFHIR(prescription types.Prescription) (*fhir.MedicationRequest, er
 			// 	}},
 			// },
 			Subject: datatypes.Reference{Reference: fhir.ToStringPtr("Patient/" + string(prescription.PatientID))},
-			MedicationReference:datatypes.Reference{Reference: fhir.ToStringPtr("Medication/2fba9b2c-7c46-45a2-acb3-8f653fa9e52a" )} ,
+			MedicationReference:datatypes.Reference{Reference: fhir.ToStringPtr("Medication/" + string(*prescription.MedicationID))} ,
 			Status : "active",
 			Intent: "order",
 			Category: &datatypes.CodeableConcept{
@@ -99,10 +90,29 @@ func convertToFHIR(prescription types.Prescription) (*fhir.MedicationRequest, er
 					Display: fhir.ToStringPtr("Prescription (procedure)"),
 				}},
 			},
-			// ValueQuantity: &datatypes.Quantity{
-			// 	Value: &valueDecimal,
-			// },
-			// EffectiveDateTime: fhir.ToDateTimePtr(time.Now().Format(fhir.DateTimeLayout)),
+
+			DosageInstruction: []datatypes.Dosage{{
+				Text: fhir.ToStringPtr(*prescription.Dosage.Instructions),
+				Timing : &datatypes.Timing {
+					Repeat: &datatypes.Repeat{
+						BoundsDuration: &datatypes.Duration  {
+							Value : &dosage_value,
+							Unit : fhir.ToStringPtr("day"),
+							System: fhir.ToUriPtr("http://unitsofmeasure.org"),
+						
+						},
+						Frequency: &dosage_frequency,
+						Period: &dosage_period,
+						PeriodUnit:fhir.ToCodePtr("d"),
+					},
+				},
+				DoseQuantity: &datatypes.SimpleQuantity {
+					Value : &dosage_amount,
+					Unit : &dosage_unit,
+					System : fhir.ToUriPtr("urn:oid:2.16.840.1.113883.2.4.4.1.900.2"),
+					Code :  fhir.ToCodePtr("245"),
+				},
+			}},
 		}
 		if prescription.EpisodeID != nil {
 			 medicationRequest.Context = &datatypes.Reference{Reference: fhir.ToStringPtr("EpisodeOfCare/" + string(*prescription.EpisodeID))}
@@ -172,6 +182,71 @@ func ConvertToDomain(medicationrequest *fhir.MedicationRequest, patientID string
 	return prescription
 }
 
+func  CreateMedication(ctx context.Context, fhirClient fhir.Client)  {
+// @TODO: hacky way to put the default medication in the fhir db, will fix this later
+
+fhirMedication := &fhir.Medication{
+	Base: resources.Base{
+		ID:           fhir.ToIDPtr("2fba9b2c-7c46-45a2-acb3-8f653fa9e52a"),
+		ResourceType: "Medication",
+	},
+	Code: &datatypes.CodeableConcept{
+		Coding: []datatypes.Coding{{
+			System:  fhir.ToUriPtr("urn:oid:2.16.840.1.113883.2.4.4.10"),
+			Code:    fhir.ToCodePtr("29998"),
+			Display: fhir.ToStringPtr("INSULINE INSULATARD INJ 100IE/ML FLACON 10M"),
+		},
+		{	System:   fhir.ToUriPtr("urn:oid:2.16.840.1.113883.2.4.4.1"),
+			Code:    fhir.ToCodePtr("111325"),}},
+		},
+};
+err := fhirClient.ReadOne(ctx, "Medication/2fba9b2c-7c46-45a2-acb3-8f653fa9e52a", &fhirMedication)
+if err != nil {
+	fhirClient.CreateOrUpdate(ctx, fhirMedication)
+}
+	
+fhirMedication = &fhir.Medication{
+	Base: resources.Base{
+		ID:           fhir.ToIDPtr("c913371c-3a89-4125-a77b-fe50fd9c5b5b"),
+		ResourceType: "Medication",
+	},
+	Code: &datatypes.CodeableConcept{
+		Coding: []datatypes.Coding{{
+			System:  fhir.ToUriPtr("urn:oid:2.16.840.1.113883.2.4.4.10"),
+			Code:    fhir.ToCodePtr("6920"),
+			Display: fhir.ToStringPtr("Ibuprofen 400mg tablet"),
+			},
+		},
+		Text :  fhir.ToStringPtr("Ibuprofen 400mg tablet"),
+		},
+};
+err = fhirClient.ReadOne(ctx, "Medication/c913371c-3a89-4125-a77b-fe50fd9c5b5b", &fhirMedication)
+if err != nil {
+	fhirClient.CreateOrUpdate(ctx, fhirMedication)
+}
+
+fhirMedication = &fhir.Medication{
+	Base: resources.Base{
+		ID:           fhir.ToIDPtr("c913371c-3a89-4125-a77b-fe50fd9cbbbb"),
+		ResourceType: "Medication",
+	},
+	Code: &datatypes.CodeableConcept{
+		Coding: []datatypes.Coding{{
+			System:  fhir.ToUriPtr("urn:oid:2.16.840.1.113883.2.4.4.10"),
+			Code:    fhir.ToCodePtr("6920"),
+			Display: fhir.ToStringPtr("Acenocoumarol 400mg tablet"),
+			},
+		},
+		Text :  fhir.ToStringPtr("Acenocoumarol 400mg tablet"),
+		},
+};
+err = fhirClient.ReadOne(ctx, "Medication/c913371c-3a89-4125-a77b-fe50fd9cbbbb", &fhirMedication)
+if err != nil {
+	fhirClient.CreateOrUpdate(ctx, fhirMedication)
+}
+}
+
+
 func (repo *fhirRepository) AllByPatient(ctx context.Context, customerID int, patientID string, episodeID *string) ([]types.Prescription, error) {
 	medicationrequests := []fhir.MedicationRequest{}
 
@@ -188,6 +263,9 @@ func (repo *fhirRepository) AllByPatient(ctx context.Context, customerID int, pa
 		return nil, err
 	}
 
+
+	// too late to figure out a normal way to add the medication to the fhir server
+	CreateMedication(ctx,fhirClient);
 
 	prescriptions := []types.Prescription{}
 	episodeCache := map[string]types.Episode{}

@@ -487,6 +487,20 @@ function createApi(options) {
 
         });
     },
+    getMedications(parameters) {
+      const params = typeof parameters === 'undefined' ? {} : parameters;
+      let headers = {
+
+      };
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getMedications');
+      return fetch(endpoint + basePath + '/private/medication'
+        , {
+          method: 'GET',
+          headers,
+          mode,
+        });
+    },
     getPatientTransfers(parameters) {
       const params = typeof parameters === 'undefined' ? {} : parameters;
       let headers = {
@@ -667,11 +681,11 @@ function createApi(options) {
       let headers = {
 
       };
-      handleSecurity([{"bearerAuth":[]}]
-          , headers, params, 'getZnoSsoInfo');
+      handleSecurity([{ "bearerAuth": [] }]
+        , headers, params, 'getZnoSsoInfo');
       return fetch(endpoint + basePath + '/private/zno/sso' + '?' + buildQuery({
-          'patientID': params['patientID'],
-        })
+        'patientID': params['patientID'],
+      })
 
         , {
           method: 'GET',

@@ -13,6 +13,7 @@ import (
 
 type Repository interface {
 	Create(ctx context.Context, customerID int, medication types.Medication)  (*types.Medication, error)
+	All(ctx context.Context, customerID int) ([]types.Medication, error)
 }
 
 type fhirRepository struct {
@@ -42,6 +43,25 @@ func (repo *fhirRepository) Create(ctx context.Context, customerID int, medicati
 	},nil
 }
 
+func (r *fhirRepository) All(ctx context.Context, customerID int) ([]types.Medication, error) {
+	var params map[string]string
+
+	fhirMedications := []fhir.Medication{}
+	
+	err := r.factory(fhir.WithTenant(customerID)).ReadMultiple(ctx, "Medication", params, &fhirMedications)
+	if err != nil {
+		return nil, err
+	}
+
+	medications := make([]types.Medication, 0)
+	for _, medication := range fhirMedications {
+		medications = append(medications, ConvertToDomain(&medication))
+	}
+
+	return medications, nil
+}
+
+
 func convertToFHIR(medication types.Medication) (*fhir.Medication, error) {
 		fhirMedication := &fhir.Medication{
 			Base: resources.Base{
@@ -69,6 +89,7 @@ func ConvertToDomain(fhirMedication *fhir.Medication) types.Medication {
 
 	medication := types.Medication{
 		Id:        types.ObjectID(fhir.FromIDPtr(fhirMedication.ID)),
+		Name:		string(*fhirMedication.Code.Coding[0].Display),
 		Source : &source,
 	}
 

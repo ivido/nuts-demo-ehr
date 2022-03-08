@@ -12,14 +12,44 @@
     <div class="mt-4">
       <form>
         <form-errors-banner :errors="formErrors" />
+        <div>
+          <label for="medication_select">Choose medication</label>
+          <div class="custom-select">
+            <select id="medication_select" v-model="selectedMedication">
+              <option v-for="c in customers" v-bind:value="c" v-bind:key="c.id">
+                {{ c.name }}
+              </option>
+            </select>
 
-        <label>Prescription:</label>
-        <input
-          type="text"
-          disabled
-          value="INSULINE INSULATARD INJ 100IE/ML FLACON 10ML"
-        />
-        <input type="text" v-model="prescription.name" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="#444"
+            >
+              <path d="M24 24H0V0h24v24z" fill="none" opacity=".87" />
+              <path
+                d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6-1.41-1.41z"
+              />
+            </svg>
+          </div>
+        </div>
+        <label>Dosage:</label>
+        <input type="text" v-model="prescription.dosage.quantity" />
+        doses of <input type="text" v-model="prescription.dosage.amount" />
+        <select v-model="prescription.dosage.unit">
+          <option value="stuk">stuk</option>
+          <option value="gr">gr</option>
+          <option value="ml">ml</option>
+        </select>
+        <label>per</label>
+        <select v-model="prescription.dosage.frequency">
+          <option value="1">day</option>
+          <option value="7">week</option>
+          <option value="30">month</option>
+        </select>
+        for <input type="text" v-model="prescription.dosage.period" /> days
+        <label>Instructions</label>
+        <input type="text" v-model="prescription.dosage.instructions" />
       </form>
     </div>
   </modal-window>
@@ -35,18 +65,40 @@ export default {
   data() {
     return {
       formErrors: [],
+      customers: [],
+      selectedMedication: null,
       prescription: {
-        name: null,
+        dosage: {
+          quantity: 1,
+          amount: 1,
+          unit: "stuk",
+          frequency: 1,
+          period: 7,
+          instructions: "",
+        },
       },
     };
   },
+  created() {
+    this.fetchMedication();
+  },
   methods: {
+    fetchMedication() {
+      this.$api
+        .getMedications()
+        .then((data) => (this.customers = data))
+        .catch((response) => {
+          console.error("failure", response);
+        })
+        .finally(() => (this.loading = false));
+    },
+
     checkForm(e) {
       // reset the errors
       this.formErrors.length = 0;
 
-      if (!this.prescription.name) {
-        this.formErrors.push("Please enter name for prescription");
+      if (!this.selectedMedication) {
+        this.formErrors.push("Please select medication for prescription");
       }
 
       return this.formErrors.length === 0;
@@ -63,14 +115,23 @@ export default {
       const payload = {
         type: "prescription",
         patientID,
-        value: this.prescription.name.toString(),
         episodeID: this.$route.params.episodeID,
+        medicationID: this.selectedMedication.id,
+        dosage: {
+          quantity: parseInt(this.prescription.dosage.quantity),
+          amount: parseInt(this.prescription.dosage.amount),
+          unit: this.prescription.dosage.unit,
+          frequency: parseInt(this.prescription.dosage.frequency),
+          period: parseInt(this.prescription.dosage.period),
+          instructions: this.prescription.dosage.instructions,
+        },
       };
 
       this.$api.createPrescription({
         body: payload,
         patientID,
       });
+
       this.$router.push({
         name: "ehr.patient.episode.edit",
         params: { id: this.$route.params.id },

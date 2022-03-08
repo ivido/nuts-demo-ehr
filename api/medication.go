@@ -7,17 +7,22 @@ import (
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/types"
 )
 
-func (w Wrapper) GetMedication(ctx echo.Context, medicationID string) error {
-	//customer := w.getCustomer(ctx)
+func (w Wrapper) GetMedication(ctx echo.Context) error {
+	cid, err := w.getCustomerID(ctx)
+	if err != nil {
+		return err
+	}
 
-	// medications, err := w.MedicationRepository.All(ctx.Request().Context(), customer.Id)
-	// if err != nil {
-	// 	return err
-	// }
+	medications, err := w.MedicationRepository.All(ctx.Request().Context(),cid)
+	if err != nil {
+		return err
+	}
 
-	// return ctx.JSON(http.StatusOK, medications)
-	return ctx.NoContent(http.StatusOK)
+	return ctx.JSON(http.StatusOK, medications)
+
 }
+
+
 
 func (w Wrapper) CreateMedication(ctx echo.Context) error {
 	cid, err := w.getCustomerID(ctx)

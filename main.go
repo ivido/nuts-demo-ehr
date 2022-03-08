@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/episode"
+	"github.com/nuts-foundation/nuts-demo-ehr/domain/medications"
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/notification"
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/prescriptions"
 	"github.com/nuts-foundation/nuts-demo-ehr/domain/reports"
@@ -51,7 +52,6 @@ import (
 
 const assetPath = "web/dist"
 
-//go:embed web/dist/*
 var embeddedFiles embed.FS
 
 const apiTimeout = 10 * time.Second
@@ -176,6 +176,7 @@ func registerEHR(server *echo.Echo, config Config, customerRepository customers.
 	fhirClientFactory := fhir.NewFactory(fhir.WithURL(config.FHIR.Server.Address), fhir.WithMultiTenancyEnabled(config.FHIR.Server.SupportsMultiTenancy()))
 	patientRepository := patients.NewFHIRPatientRepository(patients.Factory{}, fhirClientFactory)
 	reportRepository := reports.NewFHIRRepository(fhirClientFactory)
+	medicationRepository := medications.NewFHIRRepository(fhirClientFactory)
 	prescriptionRepository := prescriptions.NewFHIRRepository(fhirClientFactory)
 	orgRegistry := registry.NewOrganizationRegistry(&nodeClient)
 	dossierRepository := dossier.NewSQLiteDossierRepository(dossier.Factory{}, sqlDB)
@@ -214,6 +215,7 @@ func registerEHR(server *echo.Echo, config Config, customerRepository customers.
 		PatientRepository:       patientRepository,
 		ReportRepository:        reportRepository,
 		PrescriptionRepository:  prescriptionRepository,
+		MedicationRepository:  	medicationRepository,
 		DossierRepository:       dossier.NewSQLiteDossierRepository(dossier.Factory{}, sqlDB),
 		TransferSenderRepo:      transferSenderRepo,
 		OrganizationRegistry:    orgRegistry,

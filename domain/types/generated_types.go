@@ -161,6 +161,16 @@ type Customer struct {
 	Name string `json:"name"`
 }
 
+// Dosage defines model for Dosage.
+type Dosage struct {
+	Amount       *int    `json:"amount,omitempty"`
+	Frequency    *int    `json:"frequency,omitempty"`
+	Instructions *string `json:"instructions,omitempty"`
+	Period       *int    `json:"period,omitempty"`
+	Quantity     *int    `json:"quantity,omitempty"`
+	Unit         *string `json:"unit,omitempty"`
+}
+
 // Dossier defines model for Dossier.
 type Dossier struct {
 	// An internal object UUID which can be used as unique identifier for entities.
@@ -303,6 +313,8 @@ type Period struct {
 
 // Prescription defines model for Prescription.
 type Prescription struct {
+	Dosage *Dosage `json:"dosage,omitempty"`
+
 	// An internal object UUID which can be used as unique identifier for entities.
 	EpisodeID   *ObjectID `json:"episodeID,omitempty"`
 	EpisodeName *string   `json:"episodeName,omitempty"`
