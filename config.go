@@ -38,7 +38,7 @@ var defaultHAPIFHIRServer = FHIRServer{
 }
 
 var defaultZnoSso = ZNOSso{
-	Address:   "http://localhost:3000/login",
+	Address:   "http://localhost:3000",
 	SsoSecret: "wowsosecret",
 }
 
