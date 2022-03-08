@@ -58,7 +58,7 @@ func (service *service) CreateSsoJwt(patient types.Patient, vp auth.VerifiablePr
 	t.Set(userClaim, &jwtUser{
 		FirstName: "Jane",
 		LastName:  "the Doctor",
-		Contract:  vp,
+		// Contract:  vp,
 	})
 
 	ts, err := jwt.Sign(t, jwa.HS256, []byte(service.ssoSecret))
