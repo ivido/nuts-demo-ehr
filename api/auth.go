@@ -108,8 +108,17 @@ func (auth *Auth) CreateSessionJWT(subject string, customerId int, session strin
 }
 
 // StoreVP stores the given VP under a new identifier or existing identifier
+// Returns the sessionID
 func (auth *Auth) StoreVP(customerID int, VP auth.VerifiablePresentation) string {
 	return auth.createSession(customerID, VP, true)
+}
+
+// GetVP returns a VP based on the sessionID
+func (auth *Auth) GetVP(sessionID string) *auth.VerifiablePresentation {
+	auth.mux.RLock()
+	defer auth.mux.RUnlock()
+	credential := auth.sessions[sessionID].Credential
+	return &credential
 }
 
 // JWTHandler is like the echo JWT middleware. It checks the JWT and required claims
@@ -125,8 +134,10 @@ func (auth *Auth) JWTHandler(next echo.HandlerFunc) echo.HandlerFunc {
 					ctx.Echo().Logger.Error(err)
 					return echo.NewHTTPError(http.StatusUnauthorized, err)
 				}
-				if _, ok := token.Get(SessionID); !ok {
+				if sessionID, ok := token.Get(SessionID); !ok {
 					return echo.NewHTTPError(http.StatusUnauthorized, "could not get sessionID from token")
+				} else {
+					ctx.Set(SessionID, sessionID)
 				}
 
 				customerId, ok := customerIDFromToken(token)
