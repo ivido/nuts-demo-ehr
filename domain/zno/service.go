@@ -20,10 +20,10 @@ type jwtPatient struct {
 }
 
 type jwtUser struct {
-	Customer  types.Customer              `json:"customer"`
-	FirstName string                      `json:"firstName,omitempty"`
-	LastName  string                      `json:"lastName,omitempty"`
-	Contract  auth.VerifiablePresentation `json:"contract"`
+	Organization types.Customer              `json:"organization"`
+	FirstName    string                      `json:"firstName,omitempty"`
+	LastName     string                      `json:"lastName,omitempty"`
+	Contract     auth.VerifiablePresentation `json:"contract"`
 }
 
 type Service interface {
@@ -57,8 +57,8 @@ func (service *service) CreateSsoJwt(patient types.Patient, vp auth.VerifiablePr
 	})
 
 	t.Set(userClaim, &jwtUser{
-		Customer: customer,
-		Contract: vp,
+		Organization: customer,
+		Contract:     vp,
 	})
 
 	ts, err := jwt.Sign(t, jwa.HS256, []byte(service.ssoSecret))
