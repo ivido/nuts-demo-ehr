@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -10,12 +11,12 @@ import (
 type GetZnoSsoInfoParams = types.GetZnoSsoInfoParams
 
 func (w Wrapper) GetZnoSsoInfo(ctx echo.Context, params GetZnoSsoInfoParams) error {
-	cid, err := w.getCustomerID(ctx)
-	if err != nil {
-		return err
+	c := w.getCustomer(ctx)
+	if c == nil {
+		return errors.New("Customer not found")
 	}
 
-	patient, err := w.PatientRepository.FindByID(ctx.Request().Context(), cid, params.PatientID)
+	patient, err := w.PatientRepository.FindByID(ctx.Request().Context(), c.Id, params.PatientID)
 	if err != nil {
 		return err
 	}
@@ -23,7 +24,7 @@ func (w Wrapper) GetZnoSsoInfo(ctx echo.Context, params GetZnoSsoInfoParams) err
 	sid := ctx.Get("sid")
 	sess := w.APIAuth.GetSessions()[sid.(string)]
 
-	jwt, err := w.ZnoService.CreateSsoJwt(*patient, sess.Credential, cid)
+	jwt, err := w.ZnoService.CreateSsoJwt(*patient, sess.Credential, *c)
 	if err != nil {
 		return err
 	}

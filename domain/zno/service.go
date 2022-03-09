@@ -20,15 +20,15 @@ type jwtPatient struct {
 }
 
 type jwtUser struct {
-	CustomerID int                         `json:"customerId"`
-	FirstName  string                      `json:"firstName"`
-	LastName   string                      `json:"lastName"`
-	Contract   auth.VerifiablePresentation `json:"contract"`
+	Customer  types.Customer              `json:"customer"`
+	FirstName string                      `json:"firstName"`
+	LastName  string                      `json:"lastName"`
+	Contract  auth.VerifiablePresentation `json:"contract"`
 }
 
 type Service interface {
 	GetSsoUrl() string
-	CreateSsoJwt(types.Patient, auth.VerifiablePresentation, int) (string, error)
+	CreateSsoJwt(types.Patient, auth.VerifiablePresentation, types.Customer) (string, error)
 }
 
 type service struct {
@@ -44,7 +44,7 @@ func (service *service) GetSsoUrl() string {
 	return service.ssoAddress
 }
 
-func (service *service) CreateSsoJwt(patient types.Patient, vp auth.VerifiablePresentation, cid int) (string, error) {
+func (service *service) CreateSsoJwt(patient types.Patient, vp auth.VerifiablePresentation, customer types.Customer) (string, error) {
 	t := openid.New()
 
 	t.Set(jwt.ExpirationKey, time.Now().Add(time.Hour*24*365).Unix())
@@ -57,10 +57,8 @@ func (service *service) CreateSsoJwt(patient types.Patient, vp auth.VerifiablePr
 	})
 
 	t.Set(userClaim, &jwtUser{
-		CustomerID: cid,
-		FirstName:  "Jane",
-		LastName:   "the Doctor",
-		Contract:   vp,
+		Customer: customer,
+		Contract: vp,
 	})
 
 	ts, err := jwt.Sign(t, jwa.HS256, []byte(service.ssoSecret))
