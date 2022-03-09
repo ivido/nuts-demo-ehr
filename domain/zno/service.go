@@ -21,8 +21,8 @@ type jwtPatient struct {
 
 type jwtUser struct {
 	Customer  types.Customer              `json:"customer"`
-	FirstName string                      `json:"firstName"`
-	LastName  string                      `json:"lastName"`
+	FirstName string                      `json:"firstName,omitempty"`
+	LastName  string                      `json:"lastName,omitempty"`
 	Contract  auth.VerifiablePresentation `json:"contract"`
 }
 
