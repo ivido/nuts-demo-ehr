@@ -16,7 +16,11 @@
           <label for="medication_select">Choose medication</label>
           <div class="custom-select">
             <select id="medication_select" v-model="selectedMedication">
-              <option v-for="c in customers" v-bind:value="c" v-bind:key="c.id">
+              <option
+                v-for="c in medications"
+                v-bind:value="c"
+                v-bind:key="c.id"
+              >
                 {{ c.name }}
               </option>
             </select>
@@ -65,7 +69,7 @@ export default {
   data() {
     return {
       formErrors: [],
-      customers: [],
+      medications: [],
       selectedMedication: null,
       prescription: {
         dosage: {
@@ -86,7 +90,7 @@ export default {
     fetchMedication() {
       this.$api
         .getMedications()
-        .then((data) => (this.customers = data))
+        .then((data) => (this.medications = data))
         .catch((response) => {
           console.error("failure", response);
         })

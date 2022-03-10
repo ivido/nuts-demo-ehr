@@ -3,6 +3,7 @@ package medications
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"github.com/google/uuid"
 	"github.com/monarko/fhirgo/STU3/datatypes"
@@ -58,6 +59,11 @@ func (r *fhirRepository) All(ctx context.Context, customerID int) ([]types.Medic
 		medications = append(medications, ConvertToDomain(&medication))
 	}
 
+		// sort the medications by name
+		sort.Slice(medications, func(i, j int) bool {
+			return (medications[i].Name < medications[j].Name)
+		})
+	
 	return medications, nil
 }
 
