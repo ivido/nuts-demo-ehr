@@ -13,7 +13,7 @@ import (
 )
 
 type Repository interface {
-	Create(ctx context.Context, customerID int, medication types.Medication)  (*types.Medication, error)
+	Create(ctx context.Context, customerID int, medication types.Medication) (*types.Medication, error)
 	All(ctx context.Context, customerID int) ([]types.Medication, error)
 }
 
@@ -27,28 +27,26 @@ func NewFHIRRepository(factory fhir.Factory) *fhirRepository {
 	}
 }
 
-func (repo *fhirRepository) Create(ctx context.Context, customerID int, medication types.Medication)  (*types.Medication, error) {
+func (repo *fhirRepository) Create(ctx context.Context, customerID int, medication types.Medication) (*types.Medication, error) {
 	if medication.Id == "" {
 		medication.Id = types.ObjectID(uuid.NewString())
 	}
 	fhirMedication, err := convertToFHIR(medication)
 	if err != nil {
-		return nil,fmt.Errorf("unable to convert medication to FHIR Medication: %w", err)
+		return nil, fmt.Errorf("unable to convert medication to FHIR Medication: %w", err)
 	}
 	err = repo.factory(fhir.WithTenant(customerID)).CreateOrUpdate(ctx, fhirMedication)
 	if err != nil {
-		return nil,fmt.Errorf("unable to write Medication to FHIR store: %w", err)
+		return nil, fmt.Errorf("unable to write Medication to FHIR store: %w", err)
 	}
-	return &types.Medication{
-		
-	},nil
+	return &types.Medication{}, nil
 }
 
 func (r *fhirRepository) All(ctx context.Context, customerID int) ([]types.Medication, error) {
 	var params map[string]string
 
 	fhirMedications := []fhir.Medication{}
-	
+
 	err := r.factory(fhir.WithTenant(customerID)).ReadMultiple(ctx, "Medication", params, &fhirMedications)
 	if err != nil {
 		return nil, err
@@ -59,33 +57,32 @@ func (r *fhirRepository) All(ctx context.Context, customerID int) ([]types.Medic
 		medications = append(medications, ConvertToDomain(&medication))
 	}
 
-		// sort the medications by name
-		sort.Slice(medications, func(i, j int) bool {
-			return (medications[i].Name < medications[j].Name)
-		})
-	
+	// sort the medications by name
+	sort.Slice(medications, func(i, j int) bool {
+		return (medications[i].Name < medications[j].Name)
+	})
+
 	return medications, nil
 }
 
-
 func convertToFHIR(medication types.Medication) (*fhir.Medication, error) {
-		fhirMedication := &fhir.Medication{
-			Base: resources.Base{
-					ID:           fhir.ToIDPtr(string(medication.Id)),
-					ResourceType: "Medication",
-			},
+	fhirMedication := &fhir.Medication{
+		Base: resources.Base{
+			ID:           fhir.ToIDPtr(string(medication.Id)),
+			ResourceType: "Medication",
+		},
 
-			Code: &datatypes.CodeableConcept{
-				Coding: []datatypes.Coding{{
-					System:  fhir.ToUriPtr("urn:oid:2.16.840.1.113883.2.4.4.10"),
-					Code:    fhir.ToCodePtr("29998"),
-					Display: fhir.ToStringPtr("INSULINE INSULATARD INJ 100IE/ML FLACON 10M"),
-				},
-				{	System:   fhir.ToUriPtr("urn:oid:2.16.840.1.113883.2.4.4.1"),
-					Code:    fhir.ToCodePtr("111325"),}},
-				},
-		}
-		return fhirMedication, nil
+		Code: &datatypes.CodeableConcept{
+			Coding: []datatypes.Coding{{
+				System:  fhir.ToUriPtr("urn:oid:2.16.840.1.113883.2.4.4.10"),
+				Code:    fhir.ToCodePtr("29998"),
+				Display: fhir.ToStringPtr("INSULINE INSULATARD INJ 100IE/ML FLACON 10M"),
+			},
+				{System: fhir.ToUriPtr("urn:oid:2.16.840.1.113883.2.4.4.1"),
+					Code: fhir.ToCodePtr("111325")}},
+		},
+	}
+	return fhirMedication, nil
 }
 
 func ConvertToDomain(fhirMedication *fhir.Medication) types.Medication {
@@ -94,11 +91,10 @@ func ConvertToDomain(fhirMedication *fhir.Medication) types.Medication {
 	source := "Unknown"
 
 	medication := types.Medication{
-		Id:        types.ObjectID(fhir.FromIDPtr(fhirMedication.ID)),
-		Name:		string(*fhirMedication.Code.Coding[0].Display),
-		Source : &source,
+		Id:     types.ObjectID(fhir.FromIDPtr(fhirMedication.ID)),
+		Name:   string(*fhirMedication.Code.Coding[0].Display),
+		Source: &source,
 	}
-
 
 	return medication
 }

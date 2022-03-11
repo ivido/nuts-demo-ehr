@@ -10,7 +10,7 @@ import (
 // GetPrescriptionsParams defines parameters for GetPrescriptions.
 type GetPrescriptionsParams struct {
 	// The identifier of episode the report must be part of.
-	EpisodeID *string `json:"episodeID,omitempty"`
+	EpisodeID    *string `json:"episodeID,omitempty"`
 	MedicationID *string `json:"medicationID,omitempty"`
 }
 

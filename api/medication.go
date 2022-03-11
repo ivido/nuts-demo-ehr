@@ -13,7 +13,7 @@ func (w Wrapper) GetMedication(ctx echo.Context) error {
 		return err
 	}
 
-	medications, err := w.MedicationRepository.All(ctx.Request().Context(),cid)
+	medications, err := w.MedicationRepository.All(ctx.Request().Context(), cid)
 	if err != nil {
 		return err
 	}
@@ -21,8 +21,6 @@ func (w Wrapper) GetMedication(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, medications)
 
 }
-
-
 
 func (w Wrapper) CreateMedication(ctx echo.Context) error {
 	cid, err := w.getCustomerID(ctx)
@@ -35,13 +33,10 @@ func (w Wrapper) CreateMedication(ctx echo.Context) error {
 		return err
 	}
 
-
-	medication, err := w.MedicationRepository.Create(ctx.Request().Context(), cid,  medicationToCreate)
+	medication, err := w.MedicationRepository.Create(ctx.Request().Context(), cid, medicationToCreate)
 	if err != nil {
 		return err
 	}
 
 	return ctx.JSON(http.StatusOK, medication)
 }
-
-

@@ -121,6 +121,7 @@ export default {
         patientID,
         episodeID: this.$route.params.episodeID,
         medicationID: this.selectedMedication.id,
+        medicationName: this.selectedMedication.name,
         dosage: {
           quantity: parseInt(this.prescription.dosage.quantity),
           amount: parseInt(this.prescription.dosage.amount),
